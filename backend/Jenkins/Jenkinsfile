@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+    environment {
+        IMAGE_TAG = "${env.BUILD_ID}"
+    }
+    stages {
+        stage('Build and push Docker image') {
+            steps {
+                sh 'docker build -t backend-app:${BUILD_NUMBER} .'
+                sh 'docker push backend-app:${BUILD_NUMBER}'
+            }
+        }
+        stage('Configure Kubernetes deployment') {
+            steps {
+                // Load Kubernetes deployment YAML file
+                def deploymentYaml = readFile './revolt/k8/deployment.yaml'
+                // Replace image name and version placeholders
+                def updatedDeploymentYaml = deploymentYaml.replace('IMAGE_NAME', 'backend-app:${BUILD_NUMBER}')
+                // Write updated YAML file
+                writeFile file: 'updated-deployment.yaml', text: updatedDeploymentYaml
+            }
+        }
+        stage('Apply Kubernetes deployment') {
+            steps {
+                sh 'kubectl apply -f updated-deployment.yaml'
+            }
+        }
+        stage('Verify deployment') {
+            steps {
+                sh 'kubectl get deployments'
+                sh 'kubectl get pods'
+            }
+        }
+    }
+}
