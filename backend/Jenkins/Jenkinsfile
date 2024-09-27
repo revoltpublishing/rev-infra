@@ -12,12 +12,14 @@ pipeline {
         }
         stage('Configure Kubernetes deployment') {
             steps {
-                // Load Kubernetes deployment YAML file
-                def deploymentYaml = readFile './revolt/k8/deployment.yaml'
+                script {
+                          // Load Kubernetes deployment YAML file
+                     def deploymentYaml = readFile './revolt/k8/deployment.yaml'
                 // Replace image name and version placeholders
-                def updatedDeploymentYaml = deploymentYaml.replace('IMAGE_NAME', 'backend-app:${BUILD_NUMBER}')
+                    def updatedDeploymentYaml = deploymentYaml.replace('IMAGE_NAME', 'backend-app:${BUILD_NUMBER}')
                 // Write updated YAML file
-                writeFile file: 'updated-deployment.yaml', text: updatedDeploymentYaml
+                    writeFile file: 'updated-deployment.yaml', text: updatedDeploymentYaml
+                }
             }
         }
         stage('Apply Kubernetes deployment') {
