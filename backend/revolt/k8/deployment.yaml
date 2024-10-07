@@ -5,7 +5,7 @@ metadata:
   labels:
     app: rev-backend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: backend-app
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: backend-app
-          image: IMAGE_NAME
+          image: 222634389464.dkr.ecr.ap-south-1.amazonaws.com/rev-imgs:backend_main_latest_tag
           ports:
             - containerPort: 80
           envFrom:
